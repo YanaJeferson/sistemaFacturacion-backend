@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RegisterModule } from './register/register.module';
+import { LoginModule } from './login/login.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { RegisterModule } from './register/register.module';
       }),
     }),
     RegisterModule,
+    LoginModule,
   ],
   controllers: [AppController],
   providers: [AppService],
