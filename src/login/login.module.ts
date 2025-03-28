@@ -7,13 +7,16 @@ import { User } from '../register/entities/user.entity';
 import { UserSession } from './entities/user-session.entity';
 import { TokenSave } from '../lib/token-save';
 import { LoginTokenGenerator } from 'src/lib/token-generator';
+import { HttpModule } from '@nestjs/axios';
+import { GithubAuthService } from './services/github.services';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([User, UserSession]),
-        JwtModule.register({}),
-    ],
-    controllers: [LoginController],
-    providers: [LoginService, TokenSave, LoginTokenGenerator],
+  imports: [
+    TypeOrmModule.forFeature([User, UserSession]),
+    JwtModule.register({}),
+    HttpModule,
+  ],
+  controllers: [LoginController],
+  providers: [LoginService, TokenSave, LoginTokenGenerator, GithubAuthService],
 })
 export class LoginModule {}

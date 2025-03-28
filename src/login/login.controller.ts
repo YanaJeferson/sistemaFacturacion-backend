@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, Delete, Param, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Get, Delete, Param, Req, UseGuards, Query, Res } from '@nestjs/common';
 import { LoginService } from './login.service';
 import { UserLoginDto } from './dto/user-login.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -14,32 +14,11 @@ export class LoginController {
         return this.loginService.loginAttackTracer(userLoginDto, req);
     }
 
-    @Get("github")
-    @UseGuards(AuthGuard('github'))
-    async githubAuth() {
-        // GitHub authentication will be handled by Passport
+    @Get('github/callback')
+    githubLogin(@Query('code') code: string,@Query('state') state: string,@Res() res: any, @Req() req: Request) {
+        return this.loginService.githubLoginCallBack(code, state, res, req);
     }
 
-    @Get("github/callback")
-    @UseGuards(AuthGuard('github'))
-    async githubAuthCallback(@Req() req: Request) {
-        return this.loginService.loginGitHub(req.user, req);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     @UseGuards(JwtAuthGuard)
     @Get('sessions')
     getUserSessions(@Req() req: Request) {
