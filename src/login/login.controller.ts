@@ -14,35 +14,41 @@ export class LoginController {
         return this.loginService.loginAttackTracer(userLoginDto, req);
     }
 
-    @Get('github/callback')
-    githubLogin(@Query('code') code: string,@Query('state') state: string,@Res() res: any, @Req() req: Request) {
-        return this.loginService.githubLoginCallBack(code, state, res, req);
+    @Get('attacktracer/refresh')
+    refreshLogin(@Req() req: Request) {
+        const refreshToken = req.cookies['refreshToken'];
+        return this.loginService.refreshLogin(refreshToken,req);
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Get('sessions')
-    getUserSessions(@Req() req: Request) {
-        if (!req.user) {
-            throw new Error('User not authenticated');
-        }
-        return this.loginService.getUserSessions(req.user['id']);
-    }
+    // @Get('github/callback')
+    // githubLogin(@Query('code') code: string,@Query('state') state: string,@Res() res: any, @Req() req: Request) {
+    //     return this.loginService.githubLoginCallBack(code, state, res, req);
+    // }
 
-    @UseGuards(JwtAuthGuard)
-    @Delete('sessions/:sessionId')
-    logoutSession(@Req() req: Request, @Param('sessionId') sessionId: number) {
-        if (!req.user) {
-            throw new Error('User not authenticated');
-        }
-        return this.loginService.logoutSession(req.user['id'], sessionId);
-    }
+    // @UseGuards(JwtAuthGuard)
+    // @Get('sessions')
+    // getUserSessions(@Req() req: Request) {
+    //     if (!req.user) {
+    //         throw new Error('User not authenticated');
+    //     }
+    //     return this.loginService.getUserSessions(req.user['id']);
+    // }
 
-    @UseGuards(JwtAuthGuard)
-    @Delete('sessions')
-    logoutAllSessions(@Req() req: Request) {
-        if (!req.user) {
-            throw new Error('User not authenticated');
-        }
-        return this.loginService.logoutAllSessions(req.user['userId']);
-    }
+    // @UseGuards(JwtAuthGuard)
+    // @Delete('sessions/:sessionId')
+    // logoutSession(@Req() req: Request, @Param('sessionId') sessionId: number) {
+    //     if (!req.user) {
+    //         throw new Error('User not authenticated');
+    //     }
+    //     return this.loginService.logoutSession(req.user['id'], sessionId);
+    // }
+
+    // @UseGuards(JwtAuthGuard)
+    // @Delete('sessions')
+    // logoutAllSessions(@Req() req: Request) {
+    //     if (!req.user) {
+    //         throw new Error('User not authenticated');
+    //     }
+    //     return this.loginService.logoutAllSessions(req.user['userId']);
+    // }
 }
