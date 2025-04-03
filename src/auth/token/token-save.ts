@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserSession } from 'src/session-user/entitie/user-session.entities';
 import { Repository } from 'typeorm';
-import { UserSession } from '../../entities/user-session.entities';
 
 @Injectable()
 export class TokenSave {
