@@ -1,3 +1,4 @@
+import { UserSession } from 'src/session-user/entitie/user-session.entities';
 import {
   Entity,
   Column,
@@ -6,7 +7,6 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { UserSession } from './user-session.entities';
 
 @Entity('users')
 export class User {

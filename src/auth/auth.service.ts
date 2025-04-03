@@ -5,13 +5,13 @@ import {
 } from '@nestjs/common';
 import { UserLoginDto } from './dto/user-login.dto';
 import { Repository } from 'typeorm';
-import { User } from 'src/entities/user.entities';
+import { User } from 'src/user/entitie/user.entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginTokenGenerator } from './token/token-generator';
 import { TokenSave } from './token/token-save';
 import { GithubAuthService } from './services/github.services';
-import { UserSession } from 'src/entities/user-session.entities';
+import { UserSession } from 'src/session-user/entitie/user-session.entities';
 
 @Injectable()
 export class AuthService {

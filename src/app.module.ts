@@ -3,10 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
-import { UserSession } from './entities/user-session.entities';
-import { User } from './entities/user.entities';
+import { User } from './user/entitie/user.entities';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { UserSession } from './session-user/entitie/user-session.entities';
 
 @Module({
   imports: [
