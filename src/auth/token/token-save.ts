@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserSession } from '../login/entities/user-session.entity';
+import { UserSession } from '../../entities/user-session.entities';
 
 @Injectable()
 export class TokenSave {
@@ -10,7 +10,7 @@ export class TokenSave {
     private sessionRepository: Repository<UserSession>,
   ) {}
 
-  async saveToken(
+  async saveTokenInDB(
     user: any,
     accessToken: string,
     refreshToken: string,
@@ -37,7 +37,32 @@ export class TokenSave {
         },
       };
     } catch (error) {
-      console.error('Error saving token:', error);
+      console.error('Error saving token in db:', error);
+      throw new Error('Failed to save session');
+    }
+  }
+  
+  async saveTokenInCookies(
+    accessToken: string,
+    refreshToken: string,
+    req: any,
+  ) {
+    try {
+      req.res.cookie('accessToken', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'Strict',
+        path: '/',
+      });
+
+      req.res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'Strict',
+        path: '/',
+      });
+    } catch (error) {
+      console.error('Error saving token in cookies:', error);
       throw new Error('Failed to save session');
     }
   }

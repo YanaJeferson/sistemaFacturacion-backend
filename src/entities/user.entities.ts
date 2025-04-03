@@ -4,11 +4,14 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { UserSession } from './user-session.entities';
+
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ length: 100 })
   name: string;
@@ -27,6 +30,9 @@ export class User {
 
   @Column({ nullable: true, unique: true })
   providerId: string;
+
+  @OneToMany(() => UserSession, (session) => session.user, { cascade: true })
+  sessions: UserSession[];
 
   @CreateDateColumn()
   createdAt: Date;
