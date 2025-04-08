@@ -4,7 +4,7 @@ DB_PORT=3306
 DB_USERNAME=root
 DB_PASSWORD=root
 DB_DATABASE=attacktracer_db
-NODE_ENV=development
+##NODE_ENV=development
 
 ##JWT_token_Key
 JWT_SECRET=$2a$12$YPSYDiRqE3DbnmCgu/jTLukht1M4DM.miIClwFBaVSqg35WlqAf2K
@@ -13,5 +13,12 @@ JWT_REFRESH_SECRET=$2a$12$8FqWCo0abN.4tTGLf9anz.DxY2qZXRzlvCCSy6qQKpDwxYVmyIM62
 ##Git_auth_Key
 GITHUB_CLIENT_ID=Ov23lix6Ea8yEzZkLbfm
 GITHUB_CLIENT_SECRET=c96f5cedaa171e953e0e4f4d2ac0523d6f86e636
-GITHUB_CALLBACK_URL=http://localhost:3000/register/github/callback
+GITHUB_CALLBACK_URL=http://localhost:3000/auth/login/github/callback
 
+
+##fronted url
+FRONTEND_URL=http://localhost:3001
+##local
+##NODE_ENV=development
+##pruduccion
+##NODE_ENV=production
