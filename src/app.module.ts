@@ -7,6 +7,8 @@ import { User } from './user/entitie/user.entities';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserSession } from './session-user/entitie/user-session.entities';
+import { WebModule } from './web/web.module';
+import { Web } from './web/entitie/web.entities';
 
 @Module({
   imports: [
@@ -20,9 +22,10 @@ import { UserSession } from './session-user/entitie/user-session.entities';
       username: 'root',
       password: 'root',
       database: 'attacktracer_db',
-      entities: [User, UserSession],
+      entities: [User, UserSession, Web],
       synchronize: true,
     }),
+    WebModule,
     UserModule,
     AuthModule,
   ],

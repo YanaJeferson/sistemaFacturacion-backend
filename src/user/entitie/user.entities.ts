@@ -1,4 +1,5 @@
 import { UserSession } from 'src/session-user/entitie/user-session.entities';
+import { Web } from '../../web/entitie/web.entities';
 import {
   Entity,
   Column,
@@ -33,6 +34,9 @@ export class User {
 
   @OneToMany(() => UserSession, (session) => session.user, { cascade: true })
   sessions: UserSession[];
+
+  @OneToMany(() => Web, (web) => web.user)
+  webs: Web[];
 
   @CreateDateColumn()
   createdAt: Date;
