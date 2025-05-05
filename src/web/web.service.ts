@@ -1,54 +1,81 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Entity, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { abstractCrudService } from '../utils/abstractCrudService';
 import { Web } from './entitie/web.entities';
 import { User } from '../user/entitie/user.entities';
+import { WebFilterDto } from './dto/web-filter.dto';
+import { webUpsertDto } from './dto/web-register.dto';
 
 @Injectable()
-export class WebService {
+export class WebService extends abstractCrudService {
   constructor(
     @InjectRepository(Web)
     private webRepository: Repository<Web>,
-  ) {}
-
-  async create(createWebDto: any, user: User) {
-    const web = this.webRepository.create({
-      ...createWebDto,
-      user: user
-    });
-    return await this.webRepository.save(web);
+  ) {
+    super(webRepository);
   }
 
-  async findAllByUser(user: User) {
-    return await this.webRepository.find({
-      where: { user: { id: user.id } },
-    });
+  private validateUser(user: User) {
+    if (!user?.id) throw new UnauthorizedException('Invalid user');
   }
-  
 
-  async update(id: string, updateWebDto: any, user: User) {
-    const web = await this.webRepository.findOne({
-      where: { id, user: { id: user.id } },
-    });
+  async upsert(data: webUpsertDto, user: User) {
+    this.validateUser(user);
 
-    if (!web) {
-      throw new UnauthorizedException('Web not found or unauthorized');
+    const { url, name, id } = data;
+
+    // Validate URL format: must be HTTPS and contain domain
+    if (!url?.includes('https://') || !url.includes('.')) {
+      throw new ConflictException(
+        'URL must contain "https://" and at least one dot (.)',
+      );
     }
 
-    Object.assign(web, updateWebDto);
-    return await this.webRepository.save(web);
+    // Prevent duplicate entries for new records
+    if (!id) {
+      const exists = await this.findRegister({
+        name,
+        url,
+        user: { id: user.id },
+      });
+      if (exists?.length) {
+        throw new ConflictException('Web already exists for the user');
+      }
+    }
+
+    return this.upsertRegister({ ...data, user: { id: user.id } });
+  }
+
+  async findData(user: User, params: WebFilterDto) {
+    this.validateUser(user);
+
+    const data = await this.findRegister({
+      ...params,
+      user: { id: user.id },
+    });
+
+    return {
+      message: data?.length
+        ? 'Web sites found successfully'
+        : 'No web sites found',
+      data: data ?? [],
+    };
   }
 
   async delete(id: string, user: User) {
-    const web = await this.webRepository.findOne({
-      where: { id, user: { id: user.id } },
-    });
+    this.validateUser(user);
 
-    if (!web) {
+    // Ensure user owns the web entry before deletion
+    const found = await this.findRegister({ id, user: { id: user.id } });
+    if (!found?.length) {
       throw new UnauthorizedException('Web not found or unauthorized');
     }
 
-    await this.webRepository.remove(web);
-    return { message: 'Web eliminada exitosamente' };
+    return this.deleteRegister(id);
   }
 }

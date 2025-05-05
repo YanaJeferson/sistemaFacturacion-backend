@@ -1,25 +1,36 @@
-import { Controller, Get, Post, Body, Patch, Param, UseGuards, Req, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  UseGuards,
+  Req,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { WebService } from './web.service';
 import { AuthGuard } from '@nestjs/passport';
+import { webUpsertDto } from './dto/web-register.dto';
 
 @Controller('web')
 @UseGuards(AuthGuard('jwt'))
 export class WebController {
   constructor(private readonly webService: WebService) {}
 
-  @Post()
-  create(@Body() createWebDto: any, @Req() req: any) {
-    return this.webService.create(createWebDto, req.user);
-  }
-
   @Get()
-  findAll(@Req() req: any) {
-    return this.webService.findAllByUser(req.user);
+  getData(
+    @Query('name') name: string,
+    @Query('url') url: string,
+    @Req() req: any,
+  ) {
+    return this.webService.findData(req.user, { name, url });
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWebDto: any, @Req() req: any) {
-    return this.webService.update(id, updateWebDto, req.user);
+  @Post()
+  upsert(@Body() body: webUpsertDto, @Req() req: any) {
+    return this.webService.upsert(body, req.user);
   }
 
   @Delete(':id')
