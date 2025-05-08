@@ -6,4 +6,10 @@ export class WebFilterDto {
 
   @IsOptional()
   url: string;
+
+  @IsOptional()
+  page: number;
+
+  @IsOptional()
+  limit: number;
 }

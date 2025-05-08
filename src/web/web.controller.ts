@@ -23,9 +23,11 @@ export class WebController {
   getData(
     @Query('name') name: string,
     @Query('url') url: string,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
     @Req() req: any,
   ) {
-    return this.webService.findData(req.user, { name, url });
+    return this.webService.findData(req.user, { name, url, page, limit });
   }
 
   @Post()

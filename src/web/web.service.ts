@@ -43,7 +43,7 @@ export class WebService extends abstractCrudService {
         url,
         user: { id: user.id },
       });
-      if (exists?.length) {
+      if (exists?.data.length) {
         throw new ConflictException('Web already exists for the user');
       }
     }
@@ -54,16 +54,16 @@ export class WebService extends abstractCrudService {
   async findData(user: User, params: WebFilterDto) {
     this.validateUser(user);
 
-    const data = await this.findRegister({
+    const result = await this.findRegister({
       ...params,
       user: { id: user.id },
     });
 
     return {
-      message: data?.length
+      message: result?.data.length
         ? 'Web sites found successfully'
         : 'No web sites found',
-      data: data ?? [],
+      ...result,
     };
   }
 
@@ -71,8 +71,8 @@ export class WebService extends abstractCrudService {
     this.validateUser(user);
 
     // Ensure user owns the web entry before deletion
-    const found = await this.findRegister({ id, user: { id: user.id } });
-    if (!found?.length) {
+    const result = await this.findRegister({ id, user: { id: user.id } });
+    if (!result?.data.length) {
       throw new UnauthorizedException('Web not found or unauthorized');
     }
 
