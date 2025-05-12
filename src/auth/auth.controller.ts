@@ -11,23 +11,41 @@ import {
 import { UserLoginDto } from './dto/user-login.dto';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { LoginResponseDto } from './dto/login-response.dto';
+import { ErrorResponseDto } from './dto/error-response.dto';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login/attacktracer')
-  async login(@Body() userLoginDto: UserLoginDto, @Req() req: Request) {
-    return this.authService.loginAttackTracer(userLoginDto, req);
+  @ApiOperation({ summary: 'login with attack tracer' })
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful',
+    type: LoginResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Invalid credentials',
+    type: ErrorResponseDto,
+  })
+  @ApiBody({ type: UserLoginDto }) 
+  async login(@Body() body: UserLoginDto, @Req() req: Request) {
+    return this.authService.loginAttackTracer(body, req);
   }
 
   @Get('login/refresh')
+  @ApiOperation({ summary: 'refresh login' })
   refreshLogin(@Req() req: Request) {
     return this.authService.refreshLogin(req);
   }
 
   //login with github
   @Get('login/github/callback')
+  @ApiOperation({ summary: 'login with github' })
   githubLogin(
     @Query('code') code: string,
     @Query('state') state: string,
@@ -38,6 +56,7 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({ summary: 'test login' })
   @Get('check')
   test() {
     return { status: 'ok' };

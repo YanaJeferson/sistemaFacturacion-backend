@@ -24,7 +24,7 @@ export class AuthService {
     private readonly tokenSave: TokenSave,
     private readonly githubAuthService: GithubAuthService,
   ) {}
-  async loginAttackTracer(userLoginDto: UserLoginDto, req: any) {
+  async loginAttackTracer(userLoginDto: UserLoginDto, req: Request) {
     const user = await this.userRepository.findOne({
       where: { email: userLoginDto.email },
       select: ['id', 'email', 'name', 'avatar', 'password'],
@@ -50,6 +50,7 @@ export class AuthService {
     ]);
 
     return {
+      statusCode: 200,
       message: 'Login successful',
       user: { email: user.email, name: user.name, avatar: user.avatar || null },
     };
@@ -145,7 +146,7 @@ export class AuthService {
             req,
           ),
         ]);
-        res.redirect(`${process.env.FRONTEND_URL}/login/Successful`)
+        res.redirect(`${process.env.FRONTEND_URL}/login/Successful`);
         return {
           message: 'Login successful',
           user: { email: user[0].email, name: user[0].name },
