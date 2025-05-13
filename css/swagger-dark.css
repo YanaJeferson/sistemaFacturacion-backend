@@ -27,7 +27,7 @@ h2 {
   color: #e6e6e6;
 }
 
-span {
+span:not(code span) {
   color: #e6e6e6 !important;
 }
 
@@ -185,4 +185,43 @@ h4 {
 .swagger-ui .parameter__extension,
 .swagger-ui .parameter__in {
   color: #b2b2b2 !important;
+}
+
+.renderedMarkdown p{
+  color: #b2b2b2 !important;
+}
+
+.version {
+  border-color: #ffffff00 !important;
+  background-color: #ffffff00 !important;
+}
+
+small:has(pre) {
+  border-color: #ffffff00 !important;
+  background-color: #ffffff00 !important;
+}
+
+.version-stamp {
+  border-color: #ffffff00 !important;
+  background-color: #ffffff00 !important;
+}
+
+/* Code block styles */
+.swagger-ui pre {
+  background-color: #1a1a1a !important;
+  border: 1px solid #383838 !important;
+  border-radius: 4px;
+  padding: 12px !important;
+}
+
+.example:has(code) {
+  background-color: #111111 !important;
+  font-family:
+    'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace !important;
+}
+
+.body-param__example:has(code) {
+  background-color: #111111 !important;
+  font-family:
+    'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace !important;
 }
