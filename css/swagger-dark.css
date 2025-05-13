@@ -1,66 +1,52 @@
-/* Base theme colors */
-body {
-  background-color: #282828 !important;
-  color: #e6e6e6;
+/* Base */
+body,
+.swagger-ui .info,
+.tablinks,
+span:not(code span),
+h4,
+#nostyle,
+.swagger-ui .tab,
+.swagger-ui .opblock-description-wrapper p,
+.swagger-ui .opblock-external-docs-wrapper p,
+.swagger-ui .opblock-title_normal p,
+.renderedMarkdown p,
+.swagger-ui .parameter__extension,
+.swagger-ui .parameter__in {
+  color: #e6e6e6 !important;
 }
 
-/* Header and container styles */
-.swagger-ui .topbar {
-  background: #1c1c1c;
+body {
+  background-color: #282828 !important;
+}
+
+/* Headers */
+h2 {
+  color: #ffffff !important;
+  font-weight: 500 !important;
 }
 
 .opblock-section-header {
   background-color: #282828 !important;
 }
 
-/* Typography */
-h2 {
-  color: #ffffff !important;
-  font-weight: 500 !important;
+.swagger-ui .topbar {
+  background: #1c1c1c;
 }
 
-.tablinks {
-  color: #e6e6e6 !important;
-}
-
-.swagger-ui .info {
-  color: #e6e6e6;
-}
-
-span:not(code span) {
-  color: #e6e6e6 !important;
-}
-
-h4 {
-  color: #e6e6e6 !important;
-}
-
-/* API endpoints styling */
-.swagger-ui .scheme-container {
-  background: #1c1c1c !important;
-}
-
-.swagger-ui .opblock-summary-method {
-  color: #ffffff !important;
-  font-weight: 600 !important;
-  text-shadow: none;
-  border-radius: 3px;
-}
-
+/* Endpoint sections */
 .swagger-ui .opblock {
   background: #1c1c1c !important;
   border: 1px solid #383838 !important;
-  margin: 0 0 15px;
+  margin-bottom: 15px;
   box-shadow: none;
   transition: all 0.2s ease;
 }
 
 .swagger-ui .opblock:hover {
-  transform: none;
   border-color: #404040 !important;
 }
 
-/* HTTP method colors matching standard conventions */
+/* HTTP methods */
 .swagger-ui .opblock.opblock-get {
   border-left: 4px solid #61affe !important;
 }
@@ -81,49 +67,50 @@ h4 {
   border-left: 4px solid #50e3c2 !important;
 }
 
-#nostyle {
-  color: #e6e6e6 !important;
+/* Summary */
+.swagger-ui .opblock-summary-method {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border-radius: 3px;
+  text-shadow: none;
 }
 
-/* Text elements */
 .swagger-ui .opblock-summary-description,
 .swagger-ui .parameter__name,
 .swagger-ui .parameter__type,
 .swagger-ui table thead tr th,
 .swagger-ui .response-col_status,
-.swagger-ui .response-col_description,
-.swagger-ui .opblock-description-wrapper p,
-.swagger-ui .opblock-external-docs-wrapper p,
-.swagger-ui .opblock-title_normal p {
+.swagger-ui .response-col_description {
   color: #b2b2b2 !important;
   font-weight: 400;
   font-size: 13px;
 }
 
-/* Interactive elements */
+/* Buttons */
 .swagger-ui .btn {
   background-color: #4990e2 !important;
   color: #ffffff !important;
   border: none !important;
   box-shadow: none;
   font-weight: 500 !important;
-  transition: all 0.2s ease;
   border-radius: 3px;
   opacity: 0.9;
+  transition: all 0.2s ease;
 }
 
 .swagger-ui .btn:hover {
   opacity: 1;
 }
 
+/* Inputs */
 .swagger-ui input[type='text'],
 .swagger-ui textarea {
   background-color: #282828 !important;
   color: #ffffff !important;
   border: 1px solid #404040 !important;
+  border-radius: 3px;
   padding: 8px !important;
   transition: all 0.2s ease;
-  border-radius: 3px;
 }
 
 .swagger-ui input[type='text']:focus,
@@ -132,11 +119,25 @@ h4 {
   box-shadow: none;
 }
 
-.arrow {
-  color: white !important;
+/* Tables */
+.swagger-ui table tbody tr td {
+  color: #b2b2b2 !important;
+  background: #282828 !important;
 }
 
-/* Schema and model styles */
+.swagger-ui table thead tr th {
+  color: #b2b2b2 !important;
+}
+
+/* Select */
+.swagger-ui select {
+  background-color: #1c1c1c !important;
+  color: #e6e6e6 !important;
+  border: 1px solid #383838 !important;
+  border-radius: 3px;
+}
+
+/* Schema & models */
 .swagger-ui .model {
   color: #b2b2b2 !important;
 }
@@ -146,67 +147,22 @@ h4 {
   opacity: 0.9;
 }
 
+/* Links */
 .swagger-ui a {
   color: #4990e2 !important;
-  transition: opacity 0.2s ease;
   opacity: 0.9;
+  transition: opacity 0.2s ease;
 }
 
 .swagger-ui a:hover {
   opacity: 1;
 }
 
-.swagger-ui .tab {
-  color: #b2b2b2 !important;
-}
-
 .swagger-ui .tab.active {
   color: #4990e2 !important;
 }
 
-/* Table styles */
-.swagger-ui table tbody tr td {
-  color: #b2b2b2 !important;
-  background: #282828 !important;
-}
-
-.swagger-ui select {
-  background-color: #1c1c1c !important;
-  color: #e6e6e6 !important;
-  border: 1px solid #383838 !important;
-  border-radius: 3px;
-}
-
-.swagger-ui .parameter__type {
-  color: #4990e2 !important;
-  opacity: 0.9;
-}
-
-.swagger-ui .parameter__extension,
-.swagger-ui .parameter__in {
-  color: #b2b2b2 !important;
-}
-
-.renderedMarkdown p{
-  color: #b2b2b2 !important;
-}
-
-.version {
-  border-color: #ffffff00 !important;
-  background-color: #ffffff00 !important;
-}
-
-small:has(pre) {
-  border-color: #ffffff00 !important;
-  background-color: #ffffff00 !important;
-}
-
-.version-stamp {
-  border-color: #ffffff00 !important;
-  background-color: #ffffff00 !important;
-}
-
-/* Code block styles */
+/* Code blocks */
 .swagger-ui pre {
   background-color: #1a1a1a !important;
   border: 1px solid #383838 !important;
@@ -214,14 +170,30 @@ small:has(pre) {
   padding: 12px !important;
 }
 
-.example:has(code) {
+.example:has(code),
+.body-param__example:has(code) {
   background-color: #111111 !important;
   font-family:
     'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace !important;
 }
 
-.body-param__example:has(code) {
-  background-color: #111111 !important;
-  font-family:
-    'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace !important;
+/* Version */
+.version,
+small:has(pre),
+.version-stamp {
+  border-color: #ffffff00 !important;
+  background-color: #ffffff00 !important;
+}
+
+.scheme-container {
+  background-color: #ffffff00!important;
+}
+
+.swagger-ui .opblock-tag {
+  border-bottom: 1px solid rgba(180, 180, 180, 0.671);
+}
+
+/* Icons */
+.arrow {
+  fill: white !important;
 }
