@@ -63,6 +63,7 @@ export class WebService extends abstractCrudService {
       message: result?.data.length
         ? 'Web sites found successfully'
         : 'No web sites found',
+      statusCode: result?.data.length ? 200 : 404,
       ...result,
     };
   }

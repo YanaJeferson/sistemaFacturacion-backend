@@ -8,19 +8,20 @@ import {
 export class abstractCrudService {
   constructor(protected readonly repo: Repository<any>) {}
 
-  async findRegister(
-    filters: Partial<any>,
-  ): Promise<{ data: any[]; total: number; page: number; totalPages: number }> {
+  async findRegister(filters: Partial<any>): Promise<{
+    data: any[];
+    total: number;
+    offset: number;
+    totalPages: number;
+  }> {
     try {
-      // Extraer paginación
-      const page = filters.page ? Number(filters.page) : 1;
+      const offset = filters.offset ? Number(filters.offset) : 0;
       const limit = filters.limit ? Number(filters.limit) : 10;
-      const skip = (page - 1) * limit;
 
-      // Remover paginación del objeto de filtros
-      const { page: _, limit: __, ...whereFilters } = filters;
+      // Remove pagination from filters object
+      const { offset: _, limit: __, ...whereFilters } = filters;
 
-      // Limpiar filtros vacíos
+      // Clean empty filters
       const cleanFilters = Object.entries(whereFilters).reduce(
         (acc, [key, value]) => {
           if (
@@ -38,14 +39,14 @@ export class abstractCrudService {
 
       const [data, total] = await this.repo.findAndCount({
         where: cleanFilters,
-        skip,
+        skip: offset,
         take: limit,
       });
 
       return {
         data,
         total,
-        page,
+        offset,
         totalPages: Math.ceil(total / limit),
       };
     } catch (error) {
