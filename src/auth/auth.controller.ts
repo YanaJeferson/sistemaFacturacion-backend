@@ -1,5 +1,4 @@
 import {
-  Body,
   Controller,
   Get,
   Post,
@@ -11,7 +10,7 @@ import {
 import { UserLoginDto } from './dto/user-login.dto';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { ErrorResponseDto } from './dto/error-response.dto';
 
@@ -32,9 +31,8 @@ export class AuthController {
     description: 'Invalid credentials',
     type: ErrorResponseDto,
   })
-  @ApiBody({ type: UserLoginDto }) 
-  async login(@Body() body: UserLoginDto, @Req() req: Request) {
-    return this.authService.loginAttackTracer(body, req);
+  async login(@Query() query: UserLoginDto, @Req() req: Request) {
+    return this.authService.loginAttackTracer(query, req);
   }
 
   @Get('login/refresh')
