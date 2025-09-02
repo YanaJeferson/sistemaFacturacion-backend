@@ -10,8 +10,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginTokenGenerator } from './token/token-generator';
 import { TokenSave } from './token/token-save';
-import { GithubAuthService } from './services/github.services';
 import { UserSession } from 'src/session-user/entitie/user-session.entities';
+import { Messages } from 'src/common/constants/messages';
 
 @Injectable()
 export class AuthService {
@@ -22,9 +22,8 @@ export class AuthService {
     private readonly userSessionRepository: Repository<UserSession>,
     private readonly loginTokenGenerator: LoginTokenGenerator,
     private readonly tokenSave: TokenSave,
-    private readonly githubAuthService: GithubAuthService,
   ) {}
-  async loginAttackTracer(userLoginDto: UserLoginDto, req: Request) {
+  async login(userLoginDto: UserLoginDto, req: Request) {
     const user = await this.userRepository.findOne({
       where: { email: userLoginDto.email },
       select: ['id', 'email', 'name', 'avatar', 'password'],
@@ -50,9 +49,9 @@ export class AuthService {
     ]);
 
     return {
-      statusCode: 200,
-      message: 'Login successful',
-      user: { email: user.email, name: user.name, avatar: user.avatar || null },
+      email: user.email,
+      name: user.name,
+      avatar: user.avatar || null,
     };
   }
 
@@ -89,42 +88,29 @@ export class AuthService {
     };
   }
 
-  async githubLoginCallBack(code, state, res, req) {
-    if (!code || !state) {
-      throw new BadRequestException('Authentication params failed.');
-    }
+  async googleLoginCallback(req: any, res: any) {
     try {
-      const githubTokenUser = await this.githubAuthService.getGithubToken(
-        code,
-        state,
-      );
+      const googleUser = req.user;
 
-      const githubUserEmail =
-        await this.githubAuthService.getGithubEmailUser(githubTokenUser);
-      const githubUserData =
-        await this.githubAuthService.getGithubDataUser(githubTokenUser);
-
-      if (!githubUserEmail || !githubUserData) {
-        throw new BadRequestException('GitHub user data not found.');
+      if (!googleUser) {
+        throw new BadRequestException('Google user not found.');
       }
 
-      const hashedGithubId = await bcrypt.hash(
-        githubUserData.id.toString(),
-        10,
-      );
+      const hashedGoogleId = await bcrypt.hash(googleUser.id.toString(), 10);
 
       const user = await this.userRepository.find({
-        where: [{ email: githubUserEmail }, { providerId: hashedGithubId }],
+        where: [{ email: googleUser.email }, { providerId: hashedGoogleId }],
         select: ['id', 'providerId', 'email', 'name'],
       });
 
       if (user.length === 0) {
+        // Nuevo usuario
         const newUser = this.userRepository.create({
-          name: githubUserData.name,
-          email: githubUserEmail,
-          password: await bcrypt.hash('github-auth', 10),
-          provider: 'github',
-          providerId: hashedGithubId,
+          name: googleUser.name,
+          email: googleUser.email,
+          password: await bcrypt.hash('google-auth', 10),
+          provider: 'google',
+          providerId: hashedGoogleId,
         });
         return this.userRepository.save(newUser);
       } else if (user.length === 1) {
@@ -133,6 +119,7 @@ export class AuthService {
             user[0].id,
             user[0].email,
           );
+
         await Promise.all([
           this.tokenSave.saveTokenInDB(
             user[0],
@@ -146,15 +133,31 @@ export class AuthService {
             req,
           ),
         ]);
-        res.redirect(`${process.env.FRONTEND_URL}/login/Successful`);
-        return {
-          message: 'Login successful',
-          user: { email: user[0].email, name: user[0].name },
-        };
+
+        res.redirect(`${process.env.FRONTEND_URL}/login/successful`);
+
+        return { email: user[0].email, name: user[0].name };
       }
     } catch (error) {
-      console.error('GitHub auth error:', error);
-      throw new BadRequestException('Error en la autenticación con GitHub.');
+      console.error('Google auth error:', error);
+      throw new BadRequestException('Google authentication failed.');
     }
+  }
+
+  async logout(req: any, res: any) {
+    const refreshToken = req.cookies?.refreshToken;
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token not found.');
+    }
+
+    await this.userSessionRepository.delete({ refreshToken });
+
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    return res.status(200).json({
+      statusCode: 200,
+      message: Messages.LOGOUT_SUCCESS,
+    });
   }
 }

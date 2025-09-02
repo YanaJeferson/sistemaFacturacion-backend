@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('user')
 export class UserController {
@@ -9,9 +10,10 @@ export class UserController {
         private readonly userService: UserService,
     ) {}
 
-    @Post("register/attacktracer")
+    @Post("register")
+    @ApiBody({ type: UserRegisterDto })
     register(@Body() userRegisterDto: UserRegisterDto) {
-        return this.userService.registerAttackTracer(userRegisterDto);
+        return this.userService.register(userRegisterDto);
     } 
 
     @UseGuards(AuthGuard('jwt'))

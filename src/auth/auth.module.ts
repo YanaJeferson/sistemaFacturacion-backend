@@ -7,9 +7,9 @@ import { TokenSave } from './token/token-save';
 import { LoginTokenGenerator } from './token/token-generator';
 import { JwtService } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt-strategies';
-import { GithubAuthService } from './services/github.services';
 import { HttpModule } from '@nestjs/axios';
 import { UserSession } from 'src/session-user/entitie/user-session.entities';
+import { GoogleStrategy } from './strategies/google.strategy';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, UserSession]), HttpModule],
@@ -20,7 +20,7 @@ import { UserSession } from 'src/session-user/entitie/user-session.entities';
     TokenSave,
     LoginTokenGenerator,
     JwtStrategy,
-    GithubAuthService,
+    GoogleStrategy,
   ],
 })
 export class AuthModule {}

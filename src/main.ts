@@ -4,6 +4,8 @@ import * as cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +13,9 @@ async function bootstrap() {
     join(__dirname, '../css/swagger-dark.css'),
     'utf8',
   );
+
+  app.useGlobalInterceptors(new ResponseInterceptor());
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   // Swagger Configuration
   const config = new DocumentBuilder()
@@ -27,12 +32,12 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: 'http://localhost:3001',
+    origin: 'http://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
   app.use(cookieParser());
   
-  await app.listen(3000);
+  await app.listen(3080);
 }
 bootstrap();

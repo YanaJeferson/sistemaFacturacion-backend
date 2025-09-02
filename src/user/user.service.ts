@@ -11,7 +11,7 @@ export class UserService {
         private userRepository: Repository<User>,
       ) {} 
 
-    async registerAttackTracer(userRegisterDto) {
+    async register(userRegisterDto) {
         const existingUser = await this.userRepository.findOne({
           where: { email: userRegisterDto.email },
         });

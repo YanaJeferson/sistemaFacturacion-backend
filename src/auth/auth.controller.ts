@@ -1,8 +1,8 @@
 import {
+  Body,
   Controller,
   Get,
   Post,
-  Query,
   Req,
   Res,
   UseGuards,
@@ -10,29 +10,18 @@ import {
 import { UserLoginDto } from './dto/user-login.dto';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { LoginResponseDto } from './dto/login-response.dto';
-import { ErrorResponseDto } from './dto/error-response.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiLoginDocs } from './dto/login-response';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('login/attacktracer')
-  @ApiOperation({ summary: 'login with attack tracer' })
-  @ApiResponse({
-    status: 200,
-    description: 'Login successful',
-    type: LoginResponseDto,
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Invalid credentials',
-    type: ErrorResponseDto,
-  })
-  async login(@Query() query: UserLoginDto, @Req() req: Request) {
-    return this.authService.loginAttackTracer(query, req);
+  @Post('login')
+  @ApiLoginDocs()
+  async login(@Body() userLoginDto: UserLoginDto, @Req() req: Request) {
+    return this.authService.login(userLoginDto, req);
   }
 
   @Get('login/refresh')
@@ -41,22 +30,33 @@ export class AuthController {
     return this.authService.refreshLogin(req);
   }
 
-  //login with github
-  @Get('login/github/callback')
-  @ApiOperation({ summary: 'login with github' })
-  githubLogin(
-    @Query('code') code: string,
-    @Query('state') state: string,
-    @Res() res: any,
-    @Req() req: Request,
-  ) {
-    return this.authService.githubLoginCallBack(code, state, res, req);
+  @Get('login/google')
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({ summary: 'login with Google (redirect)' })
+  async googleAuth() {}
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({ summary: 'Google Auth Callback' })
+  async googleAuthCallback(@Req() req, @Res() res) {
+    return this.authService.googleLoginCallback(req, res);
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @ApiOperation({ summary: 'test login' })
+  @ApiOperation({ summary: 'check login and return user data' })
   @Get('check')
-  test() {
-    return { status: 'ok' };
+  test(@Req() req: any) {
+    return {
+      email: req.user.email,
+      name: req.user.name,
+      avatar: req.user.avatar || null,
+    };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('logout')
+  @ApiOperation({ summary: 'Log out and delete tokens' })
+  async logout(@Req() req, @Res() res) {
+    return this.authService.logout(req, res);
   }
 }

@@ -4,6 +4,7 @@ import { Strategy } from 'passport-jwt';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entitie/user.entities';
+import { Messages } from 'src/common/constants/messages';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -14,9 +15,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: (req) => {
         if (!req.cookies || !req.cookies.accessToken) {
-          throw new UnauthorizedException('Token no encontrado en cookies');
+          throw new UnauthorizedException(Messages.TOKEN_NOT_FOUND);
         }
-        console.log('Token desde cookies:', req.cookies.accessToken);
         return req.cookies.accessToken;
       },
 
@@ -33,7 +33,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           const secretKey = `${process.env.JWT_SECRET}_${payload.sub}_${payload.email}`;
           done(null, secretKey);
         } catch (error) {
-          done(new UnauthorizedException('Invalid token'));
+          done(new UnauthorizedException(Messages.TOKEN_INVALID));
         }
       },
     });

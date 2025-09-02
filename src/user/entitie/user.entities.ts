@@ -1,5 +1,5 @@
+import { Companies } from 'src/companies/entities/compaies.entities';
 import { UserSession } from 'src/session-user/entitie/user-session.entities';
-import { Web } from '../../web/entitie/web.entities';
 import {
   Entity,
   Column,
@@ -7,6 +7,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity('users')
@@ -26,17 +28,24 @@ export class User {
   @Column({ nullable: true })
   avatar: string;
 
-  @Column({ default: 'attackTracer' })
+  @Column({ default: 'yanaFactu' })
   provider: string;
 
   @Column({ nullable: true, unique: true })
   providerId: string;
 
+  @Column({ default: 'cashier' })
+  role: string;
+
+  @Column({ default: true })
+  status: boolean;
+
+  @ManyToOne(() => Companies, (company) => company.user, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'company_id' })
+  company: Companies[];
+
   @OneToMany(() => UserSession, (session) => session.user, { cascade: true })
   sessions: UserSession[];
-
-  @OneToMany(() => Web, (web) => web.user)
-  webs: Web[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -44,3 +53,4 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 }
+
