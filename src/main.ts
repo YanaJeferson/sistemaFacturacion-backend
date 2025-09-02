@@ -19,8 +19,8 @@ async function bootstrap() {
 
   // Swagger Configuration
   const config = new DocumentBuilder()
-    .setTitle('AttackTracer API')
-    .setDescription('API documentation for AttackTracer Backend')
+    .setTitle('FactuYana API')
+    .setDescription('API documentation for FactuYana Backend')
     .setVersion('1.0')
     .addBearerAuth()
     .addTag('auth')
@@ -28,7 +28,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document, {
     customCss,
-    customSiteTitle: 'AttackTracer API Documentation'
+    customSiteTitle: 'FactuYana API API Documentation'
   });
 
   app.enableCors({
