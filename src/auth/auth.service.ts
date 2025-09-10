@@ -100,8 +100,9 @@ export class AuthService {
 
       const user = await this.userRepository.find({
         where: [{ email: googleUser.email }, { providerId: hashedGoogleId }],
-        select: ['id', 'providerId', 'email', 'name'],
+        select: ['id', 'providerId', 'email', 'name', 'avatar'],
       });
+      console.log("googleuserxd",googleUser);
 
       if (user.length === 0) {
         // Nuevo usuario
@@ -111,6 +112,7 @@ export class AuthService {
           password: await bcrypt.hash('google-auth', 10),
           provider: 'google',
           providerId: hashedGoogleId,
+          avatar: googleUser.avatar,
         });
         return this.userRepository.save(newUser);
       } else if (user.length === 1) {
