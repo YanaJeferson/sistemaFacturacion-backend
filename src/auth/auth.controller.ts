@@ -12,6 +12,7 @@ import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiLoginDocs } from './dto/login-response';
+import { RequestResetDto, ResetPasswordDto } from './dto/reset-password.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -53,7 +54,18 @@ export class AuthController {
     };
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @Post('request-reset')
+  @ApiOperation({ summary: 'Request password reset (send email)' })
+  async requestReset(@Body() dto: RequestResetDto) {
+    return this.authService.requestReset(dto.email);
+  }
+
+  @Post('reset-password')
+  @ApiOperation({ summary: 'Reset password with token' })
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto);
+  }
+
   @Post('logout')
   @ApiOperation({ summary: 'Log out and delete tokens' })
   async logout(@Req() req, @Res() res) {

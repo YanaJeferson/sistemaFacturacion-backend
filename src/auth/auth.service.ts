@@ -3,6 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import * as jwt from 'jsonwebtoken';
 import { UserLoginDto } from './dto/user-login.dto';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/entitie/user.entities';
@@ -12,6 +13,7 @@ import { LoginTokenGenerator } from './token/token-generator';
 import { TokenSave } from './token/token-save';
 import { UserSession } from 'src/session-user/entitie/user-session.entities';
 import { Messages } from 'src/common/constants/messages';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -102,7 +104,6 @@ export class AuthService {
         where: [{ email: googleUser.email }, { providerId: hashedGoogleId }],
         select: ['id', 'providerId', 'email', 'name', 'avatar'],
       });
-      console.log("googleuserxd",googleUser);
 
       if (user.length === 0) {
         // Nuevo usuario
@@ -112,7 +113,7 @@ export class AuthService {
           password: await bcrypt.hash('google-auth', 10),
           provider: 'google',
           providerId: hashedGoogleId,
-          avatar: googleUser.avatar,
+          avatar: googleUser.picture,
         });
         return this.userRepository.save(newUser);
       } else if (user.length === 1) {
@@ -161,5 +162,43 @@ export class AuthService {
       statusCode: 200,
       message: Messages.LOGOUT_SUCCESS,
     });
+  }
+
+  async requestReset(email: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const token = jwt.sign({ userId: user.id }, process.env.RESET_SECRET || 'fallback_secret', {
+      expiresIn: '5m',
+    });
+
+    return {
+      message: 'Reset link generated',
+      resetLink: `${process.env.FRONTEND_URL}/reset-password?token=${token}`,
+    };
+  }
+
+  async resetPassword(dto: ResetPasswordDto) {
+    try {
+      const payload = jwt.verify(dto.token, process.env.RESET_SECRET || 'fallback_secret') as unknown as {
+        userId: number;
+      };
+
+      const user = await this.userRepository.findOne({
+        where: { id: String(payload.userId) },
+      });
+      if (!user) {
+        throw new BadRequestException('Invalid token');
+      }
+
+      user.password = await bcrypt.hash(dto.newPassword, 10);
+      await this.userRepository.save(user);
+
+      return { message: 'Password reset successful' };
+    } catch (err) {
+      throw new BadRequestException('Token expired or invalid');
+    }
   }
 }
