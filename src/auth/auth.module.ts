@@ -10,6 +10,7 @@ import { JwtStrategy } from './strategies/jwt-strategies';
 import { HttpModule } from '@nestjs/axios';
 import { UserSession } from 'src/session-user/entitie/user-session.entities';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { MailService } from '../mail/mail.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, UserSession]), HttpModule],
@@ -21,6 +22,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
     LoginTokenGenerator,
     JwtStrategy,
     GoogleStrategy,
+    MailService,
   ],
 })
 export class AuthModule {}

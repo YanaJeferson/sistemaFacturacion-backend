@@ -14,6 +14,7 @@ import { TokenSave } from './token/token-save';
 import { UserSession } from 'src/session-user/entitie/user-session.entities';
 import { Messages } from 'src/common/constants/messages';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +25,8 @@ export class AuthService {
     private readonly userSessionRepository: Repository<UserSession>,
     private readonly loginTokenGenerator: LoginTokenGenerator,
     private readonly tokenSave: TokenSave,
+    // private readonly userRepository: Repository<User>,
+    private readonly mailService: MailService,
   ) {}
   async login(userLoginDto: UserLoginDto, req: Request) {
     const user = await this.userRepository.findOne({
@@ -170,19 +173,23 @@ export class AuthService {
       throw new BadRequestException('User not found');
     }
 
-    const token = jwt.sign({ userId: user.id }, process.env.RESET_SECRET || 'fallback_secret', {
-      expiresIn: '5m',
-    });
+    const token = jwt.sign(
+      { userId: user.id },
+      process.env.RESET_SECRET || 'fallback_secret',
+      { expiresIn: '5m' },
+    );
 
-    return {
-      message: 'Reset link generated',
-      resetLink: `${process.env.FRONTEND_URL}/reset-password?token=${token}`,
-    };
+    await this.mailService.sendPasswordReset(user.email, user.name, token);
+
+    return { message: 'Reset link sent to email' };
   }
 
   async resetPassword(dto: ResetPasswordDto) {
     try {
-      const payload = jwt.verify(dto.token, process.env.RESET_SECRET || 'fallback_secret') as unknown as {
+      const payload = jwt.verify(
+        dto.token,
+        process.env.RESET_SECRET || 'fallback_secret',
+      ) as unknown as {
         userId: number;
       };
 

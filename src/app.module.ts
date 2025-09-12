@@ -8,6 +8,9 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserSession } from './session-user/entitie/user-session.entities';
 import { Companies } from './companies/entities/compaies.entities';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -24,17 +27,26 @@ import { Companies } from './companies/entities/compaies.entities';
       entities: [User, UserSession, Companies],
       synchronize: true,
     }),
+    MailerModule.forRoot({
+      transport: {
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      },
+      defaults: {
+        from: '"Soporte" <no-reply@tusistema.com>',
+      },
+      template: {
+        dir: join(__dirname, '..', 'src', 'mail', 'templates'),
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
+      },
+    }),
 
-    // TypeOrmModule.forRoot({
-    //   type: 'mysql',
-    //   host: 'localhost',
-    //   port: 3306,
-    //   username: 'root',
-    //   password: 'root',
-    //   database: 'attacktracer_db',
-    //   entities: [User, UserSession, Web],
-    //   synchronize: true,
-    // }),
     UserModule,
     AuthModule,
   ],
