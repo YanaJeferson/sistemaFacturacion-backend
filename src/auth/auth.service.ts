@@ -181,10 +181,10 @@ export class AuthService {
 
     await this.mailService.sendPasswordReset(user.email, user.name, token);
 
-    return { message: 'Reset link sent to email' };
+    return null;
   }
 
-  async resetPassword(dto: ResetPasswordDto) {
+  async resetPassword(dto: ResetPasswordDto, req: Request) {
     try {
       const payload = jwt.verify(
         dto.token,
@@ -199,11 +199,25 @@ export class AuthService {
       if (!user) {
         throw new BadRequestException('Invalid token');
       }
-
       user.password = await bcrypt.hash(dto.newPassword, 10);
       await this.userRepository.save(user);
+      const { accessToken, refreshToken } =
+        await this.loginTokenGenerator.generateToken(user.id, user.email);
 
-      return { message: 'Password reset successful' };
+      if (!accessToken || !refreshToken) {
+        throw new UnauthorizedException('Failed to generate tokens');
+      }
+
+      await Promise.all([
+        this.tokenSave.saveTokenInDB(user, accessToken, refreshToken, req),
+        this.tokenSave.saveTokenInCookies(accessToken, refreshToken, req),
+      ]);
+
+      return {
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar || null,
+      };
     } catch (err) {
       throw new BadRequestException('Token expired or invalid');
     }
