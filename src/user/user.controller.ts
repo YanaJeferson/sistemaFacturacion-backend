@@ -12,10 +12,4 @@ export class UserController {
   register(@Body() userRegisterDto: UserRegisterDto, @Req() req: Request) {
     return this.userService.register(userRegisterDto, req);
   }
-
-  // @UseGuards(AuthGuard('jwt'))
-  // @Get("allUser")
-  // getAllUser() {
-  //     return this.userService.findAll();
-  // }
 }

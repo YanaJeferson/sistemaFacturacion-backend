@@ -1,4 +1,4 @@
-import { Companies } from 'src/companies/entities/compaies.entities';
+import { Companies } from 'src/companies/entities/companies.entities';
 import { UserSession } from 'src/session-user/entitie/user-session.entities';
 import {
   Entity,
@@ -40,17 +40,19 @@ export class User {
   @Column({ default: true })
   status: boolean;
 
-  @ManyToOne(() => Companies, (company) => company.user, { onDelete: 'SET NULL' })
+  @ManyToOne(() => Companies, (company) => company.user_id, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'company_id' })
-  company: Companies[];
+  company: Companies;
 
   @OneToMany(() => UserSession, (session) => session.user, { cascade: true })
   sessions: UserSession[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'createdAt' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updatedAt', nullable: true })
   updatedAt: Date;
 }
-

@@ -7,10 +7,13 @@ import { User } from './user/entitie/user.entities';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserSession } from './session-user/entitie/user-session.entities';
-import { Companies } from './companies/entities/compaies.entities';
+import { Companies } from './companies/entities/companies.entities';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
+import { CompaniesService } from './companies/companies.service';
+import { CompaniesController } from './companies/companies.controller';
+import { CompaniesModule } from './companies/companies.module';
 
 @Module({
   imports: [
@@ -49,6 +52,7 @@ import { join } from 'path';
 
     UserModule,
     AuthModule,
+    CompaniesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

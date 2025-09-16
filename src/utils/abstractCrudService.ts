@@ -34,6 +34,7 @@ export class abstractCrudService {
           }
           return acc;
         },
+
         {} as Record<string, any>,
       );
 
@@ -92,9 +93,7 @@ export class abstractCrudService {
   }
 
   // Ensures record exists before deletion and handles specific error types
-  async deleteRegister(
-    id: string,
-  ): Promise<{ success: boolean; message: string }> {
+  async deleteRegister(id: string): Promise<null> {
     try {
       const record = await this.repo.findOne({ where: { id } as any });
 
@@ -103,11 +102,7 @@ export class abstractCrudService {
       }
 
       await this.repo.remove(record);
-
-      return {
-        success: true,
-        message: 'Record deleted successfully',
-      };
+      return null;
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException(
