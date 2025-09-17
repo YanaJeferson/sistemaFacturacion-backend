@@ -37,8 +37,9 @@ export class CompaniesService extends abstractCrudService {
 
   async findUserCompaniesById(params: CompanyFindDto, req) {
     return this.findRegister({
-      ...params,
       user_id: { id: req.id },
+      company_name: { like: params.company_name },
+      ruc: params.ruc 
     });
   }
 

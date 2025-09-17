@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import {
   InternalServerErrorException,
   NotFoundException,
@@ -21,7 +21,7 @@ export class abstractCrudService {
       // Remove pagination from filters object
       const { offset: _, limit: __, ...whereFilters } = filters;
 
-      // Clean empty filters
+      // Clean empty filters y convierte "like"
       const cleanFilters = Object.entries(whereFilters).reduce(
         (acc, [key, value]) => {
           if (
@@ -30,11 +30,14 @@ export class abstractCrudService {
             value !== '' &&
             !(typeof value === 'object' && Object.keys(value).length === 0)
           ) {
-            acc[key] = value;
+            if (typeof value === 'object' && 'like' in value) {
+              acc[key] = Like(`%${value.like}%`);
+            } else {
+              acc[key] = value;
+            }
           }
           return acc;
         },
-
         {} as Record<string, any>,
       );
 
