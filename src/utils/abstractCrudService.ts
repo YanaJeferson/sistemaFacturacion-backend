@@ -1,4 +1,4 @@
-import { Like, Repository } from 'typeorm';
+import { ILike, Like, Repository } from 'typeorm';
 import {
   InternalServerErrorException,
   NotFoundException,
@@ -18,10 +18,8 @@ export class abstractCrudService {
       const offset = filters.offset ? Number(filters.offset) : 0;
       const limit = filters.limit ? Number(filters.limit) : 10;
 
-      // Remove pagination from filters object
       const { offset: _, limit: __, ...whereFilters } = filters;
 
-      // Clean empty filters y convierte "like"
       const cleanFilters = Object.entries(whereFilters).reduce(
         (acc, [key, value]) => {
           if (
@@ -31,7 +29,7 @@ export class abstractCrudService {
             !(typeof value === 'object' && Object.keys(value).length === 0)
           ) {
             if (typeof value === 'object' && 'like' in value) {
-              acc[key] = Like(`%${value.like}%`);
+              acc[key] = ILike(`%${value.like}%`);
             } else {
               acc[key] = value;
             }
@@ -41,16 +39,22 @@ export class abstractCrudService {
         {} as Record<string, any>,
       );
 
+      const hasLikeFilter = Object.values(whereFilters).some(
+        (v) => typeof v === 'object' && 'like' in v,
+      );
+
+      const effectiveOffset = hasLikeFilter ? 0 : offset;
+
       const [data, total] = await this.repo.findAndCount({
         where: cleanFilters,
-        skip: offset,
+        skip: effectiveOffset,
         take: limit,
       });
 
       return {
         data,
         total,
-        offset,
+        offset: effectiveOffset,
         totalPages: Math.ceil(total / limit),
       };
     } catch (error) {
